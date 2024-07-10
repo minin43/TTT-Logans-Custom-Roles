@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+ "$basetexture" "vgui/ttt/roles/bhu/icon_bhu"
+ "$vertexcolor" 1
+ "$vertexalpha" 1
+ "$translucent" 1
+}
