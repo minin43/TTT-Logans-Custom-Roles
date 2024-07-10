@@ -102,7 +102,7 @@ function BountyHunter:PlayerIsTarget(ply)
 end
 
 function BountyHunter:CorpseIsTargetCorpse(corpse)
-    return IsValid(corpse) and corspe.sid64 == self.TargetId
+    return IsValid(corpse) and corpse.sid64 == self.TargetId
 end
 
 net.Receive("BountyHunterSetTarget", function(len, ply)

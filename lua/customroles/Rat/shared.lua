@@ -19,12 +19,19 @@ If that is a concern, instead of doing no damage to traitors, the rat could:
 - The mechanic is removed entirely
 ]]
 
+--[[
+Styles
+1: The rat does heavily-reduced damage against traitors - enough that in rare circumstances they could win gun fights, but so low that their damage is almost a non-factor
+]]
+
 --// Logan Christianson
 
 local ROLE = {}
 
 if SERVER then
     -- ROLE.ConvarTargetDamageScaling = CreateConVar("ttt_bountyhunter_damage_scaling", "1.1", FCVAR_NONE, "Damage scaling to apply to damage done by a bounty hunter to their target, default is 1.1 (or 110% damage done).", 0.1, 2)
+    ROLE.ConvarRatDamageStyle = CreateConVar("ttt_rat_damage_style", "1", FCVAR_NONE, "Controls how the Rat can damage traitors, lending to different gameplay. See workshop page for breakdown. 1: Reduced (default), 2: Full but can't kill, 3: Full and can kill", 1, 3)
+    ROLE.ConvarRatDamageStyleOneReduction = CreateConVar("ttt_rat_damage_scaling", "0.25", FCVAR_NONE, "If ttt_rat_damage_style is 1, controls how much rat damage against traitors is scalled by, default is 0.25", 0.01, 1)
 end
 
 ROLE.nameraw = "rat"
