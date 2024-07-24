@@ -129,6 +129,16 @@ hook.Add("EntityTakeDamage", "Scale Bounty Hunter Damage", function(target, dmgI
     end
 end)
 
+hook.Add("TTTBeginRound", "Notify Traitors Of Rat", function()
+    if player.IsRoleLiving(ROLE_BOUNTYHUNTER) then
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:IsDetectiveTeam() then
+                ply:ChatPrint("A bounty hunter has spawned among the innocent! Access has been granted to a Bounty menu in your shop.")
+            end
+        end
+    end
+end)
+
 local function RefundCreditEnabled()
     return GetConVar("ttt_bountyhunter_refund_credits"):GetBool()
 end
@@ -196,14 +206,18 @@ end)
 -- This has the ability to interact strangely with fake dead bodies, I think I'm okay with the fake dead body passing this
 hook.Add("TTTBodyFound", "Give Bounty Hunter Credit On Target Kill Confirmation", function(searcher, target, targetRagdoll)
     if BountyHunter:PlayerIsTarget(target) or BountyHunter:CorpseIsTargetCorpse(targetRagdoll) then
-        if IsValid(BountyHunter.TargetKiller) and BountyHunter.TargetKiller:Alive() then
-            BountyHunter.TargetKiller:AddCredits(1)
-            BountyHunter.TargetKiller:ChatPrint("Someone has confirmed you successfully eliminated the bounty, receiving your credit now!")
-        end
-
         for _, ply in ipairs(player.GetAll()) do
-            if ply:Alive() and ply:IsDetectiveTeam() then
-                ply:ChatPrint("The bounty target has been confirmed eliminated, another bounty can now be placed!")
+            if ply:Alive() then
+                if ply:IsDetectiveTeam() then
+                    ply:ChatPrint("The bounty target has been confirmed eliminated, another bounty can now be placed!")
+                elseif ply:IsBountyHunter() then
+                    if BountyHunter.TargetKiller and ply == BountyHunter.TargetKiller then
+                        ply:AddCredits(1)
+                        ply:ChatPrint("Someone has confirmed you successfully eliminated the bounty, receiving your credit now!")
+                    else
+                        ply:ChatPrint("Someone else has killed the bounty target. Better luck next time!")
+                    end
+                end
             end
         end
 

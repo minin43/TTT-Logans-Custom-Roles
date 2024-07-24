@@ -4,7 +4,7 @@ local damageScaling = GetConVar("ttt_rat_damage_scaling"):GetFloat()
 
 hook.Add("TTTDeathNotifyOverride", "Override Death Notification For Rats", function(vic, wep, att, reason, attName, attRole)
     if attRole and attRole == ROLE_RAT then
-        if vic:IsInnocentTeam() or vic:IsDetectiveTeam() then
+        if vic:IsInnocentTeam() then
             attRole = ROLE_TRAITOR
         else
             attRole = ROLE_INNOCENT
@@ -42,12 +42,13 @@ end)
 
 hook.Add("EntityTakeDamage", "Rat Damage Reduction", function(vic, dmgInfo)
     local att = dmgInfo:GetAttacker()
-
+    -- print("rat damage reduction", att)
     if IsValid(att) then
         if not att:IsPlayer() then
             att = att:GetOwner()
+            -- print(att)
         end
-        
+        -- print(att:IsPlayer(), att:IsRat(), vic:IsPlayer(), vic:IsTraitorTeam())
         if att:IsPlayer() and att:IsRat() and vic:IsPlayer() and vic:IsTraitorTeam() then
             if damageStyle == 1 then
                 dmgInfo:ScaleDamage(damageScaling or 0.25)

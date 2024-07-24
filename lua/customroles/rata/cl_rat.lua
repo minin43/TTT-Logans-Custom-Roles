@@ -21,8 +21,22 @@ hook.Add("TTTTargetIDPlayerText", "Rat Id Texts", function(target, localPly, tex
     end
 end)
 
+hook.Add("TTTTargetIDPlayerRing", "Rat Hover Ring", function(ent, localPly, _)
+    if ent and IsValid(ent) and ent:IsPlayer() and ent:IsRat() and localPly:IsTraitorTeam() then
+        return true, ROLE_COLORS_RADAR[ROLE_TRAITOR]
+    end
+end)
+
 hook.Add("TTTScoreboardPlayerRole", "Rat Scoreboard Alterations", function(targetPly, localPly, color, path)
-    if (localPly:IsTraitorTeam() and targetPly:IsRat()) or (localPly:IsRat() and targetPly:IsTraitorTeam() and GetConVar("ttt_rat_show_traitors_scoreboard"):GetBool()) then
+    if localPly:IsTraitorTeam() and targetPly:IsRat() then
+        if not targetPly:Alive() and targetPly:GetNWBool("body_searched", false) then
+            return ROLE_COLORS_SCOREBOARD[ROLE_RAT], "vgui/ttt/roles/rat/tab_rat.png"
+        else
+            return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "vgui/ttt/roles/traitor/tab_traitor.png"
+        end
+    end
+
+    if localPly:IsRat() and targetPly:IsTraitorTeam() and GetConVar("ttt_rat_show_traitors_scoreboard"):GetBool() then
         return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "vgui/ttt/roles/traitor/tab_traitor.png"
     end
 end)
@@ -41,7 +55,7 @@ hook.Add("TTTTutorialRoleText", "Rat Tutorial Role Text", function(playerRole)
 
         html = html .. divStart .. "The " .. ROLE_STRINGS[ROLE_RAT] .. "can see the " .. ROLE_STRINGS_EXT[ROLE_TRAITOR] .. " and appears as a generic " .. ROLE_STRINGS[ROLE_TRAITOR] .. " to them,"
         
-        local style = GetConVar("ttt_rat_show_traitors_scoreboard"):GetInt()
+        local style = GetConVar("ttt_rat_damage_style"):GetInt()
         if style == 1 then
             html = html .. " but does severely reduced damage against them.</div>"
         elseif style == 2 then

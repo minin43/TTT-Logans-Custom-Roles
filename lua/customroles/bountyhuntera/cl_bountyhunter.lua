@@ -82,7 +82,11 @@ local function SetupPanel(propertySheet)
         end
         BountyHunter.InfoPanel = info
 
-        if BountyHunter.Target then
+        if !BountyHunter.IsActive then
+            propertySheet:GetParent():Remove()
+
+            return
+        elseif BountyHunter.Target then
             local avatar = vgui.Create("DModelPanel", info)
             avatar:SetSize(194, 194)
             avatar:SetPos(info:GetWide() * 0.5 - (avatar:GetWide() * 0.5), 16)
@@ -173,10 +177,13 @@ net.Receive("BountyHunterResetTarget", function()
     BountyHunter.Target = nil
     BountyHunter.TargetHasBounty = false
     BountyHunter.MarkPanelToUpdate = true
+
+    RADAR:Clear() -- TODO test
 end)
 
 net.Receive("BountyHunterDisableMenu", function()
-    BountyHunter.IsActive = false -- TODO Could alternatively still show the menu but lock it, where this just immediately hides it
+    BountyHunter.IsActive = false
+    BountyHunter.MarkPanelToUpdate = true
 end)
 
 hook.Add("TTTEquipmentTabs", "Place Bounty Menu", function(propertySheet, frame)
@@ -208,6 +215,12 @@ hook.Add("TTTTargetIDPlayerText", "Mark Target For Bounty Hunter", function(targ
     end
 end)
 
+hook.Add("TTTScoreboardPlayerRole", "Rat Scoreboard Alterations", function(targetPly, localPly, color, path)
+    if localPly:IsBountyHunter() and BountyHunter.Target and targetPly == BountyHunter.Target then
+        return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "TARGET", ROLE_TRAITOR -- TODO test
+    end
+end)
+
 hook.Add("TTTRadarPlayerRender", "Bounty Hunter Radar", function(localPly, targetData, pingColor, pingIsHidden)
     local clr = pingColor
     local isHidden = pingIsHidden
@@ -220,9 +233,9 @@ hook.Add("TTTRadarPlayerRender", "Bounty Hunter Radar", function(localPly, targe
             if BountyHunter.Target and targetData.sid64 == BountyHunter.Target:SteamID64() then
                 clr = ColorAlpha(ROLE_COLORS_RADAR[ROLE_TRAITOR], alpha)
                 isHidden = false
+            else
+                isHidden = true
             end
-            
-            isHidden = true
         else
             if BountyHunter.Target and targetData.sid64 == BountyHunter.Target:SteamID64() then
                 clr = ColorAlpha(ROLE_COLORS_RADAR[ROLE_TRAITOR], alpha)
@@ -230,9 +243,9 @@ hook.Add("TTTRadarPlayerRender", "Bounty Hunter Radar", function(localPly, targe
                 clr = ColorAlpha(ROLE_COLORS_RADAR[ROLE_INNOCENT], alpha)
             end
         end
-    end
 
-    return clr, isHidden
+        return clr, isHidden
+    end
 end)
 
 hook.Add("TTTTutorialRoleText", "Bounty Hunter Tutorial Text", function(playerRole)
