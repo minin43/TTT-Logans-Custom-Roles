@@ -15,10 +15,11 @@ ROLE.nameplural = "Bounty Hunters"
 ROLE.nameext = "a Bounty Hunter"
 ROLE.nameshort = "bhu"
 
-ROLE.desc = [[You are a {role}!
+ROLE.desc = [[You are a {role}! You are on the {innocent} team.
 
-You are on the {innocent} team. Detectives can place bounties on terrorists, earn
-a credit by killing the target. Press {menukey} to spend the credit!]]
+Detectives can place bounties on terrorists, earn a credit
+
+by killing the target. Press {menukey} to spend the credit!]]
 
 ROLE.team = ROLE_TEAM_INNOCENT
 

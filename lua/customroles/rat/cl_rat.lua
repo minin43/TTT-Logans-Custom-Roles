@@ -46,12 +46,12 @@ hook.Add("TTTTutorialRoleText", "Rat Tutorial Role Text", function(playerRole)
         local roleColor = ROLE_COLORS[role]
         return "<span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>"
     end
-    print("ttttutorialroletext debug", playerRole, ROLE_RAT)
+
     if playerRole == ROLE_RAT then
         local divStart = "<div style='margin-top: 10px;'>"
         local styleEnd = "</span>"
 
-        local html = "The " .. ROLE_STRINGS[ROLE_RAT] .. " is a member of the " .. getStyleString(ROLE_INNOCENT) .. "innocent team" .. styleEnd .. " whose job is to strategically out the " .. getStyleString(ROLE_INNOCENT) .. ROLE_STRINGS_EXT[ROLE_TRAITOR] .. styleEnd .. " without drawing suspicion away from the them and onto the " .. ROLE_STRINGS[ROLE_RAT] .. ".</div>"
+        local html = "The " .. ROLE_STRINGS[ROLE_RAT] .. " is a member of the " .. getStyleString(ROLE_INNOCENT) .. "innocent team" .. styleEnd .. " whose job is to strategically out the " .. getStyleString(ROLE_INNOCENT) .. ROLE_STRINGS_EXT[ROLE_TRAITOR] .. styleEnd .. " without drawing suspicion away from the them and onto the " .. ROLE_STRINGS[ROLE_RAT] .. "."
 
         html = html .. divStart .. "The " .. ROLE_STRINGS[ROLE_RAT] .. "can see the " .. ROLE_STRINGS_EXT[ROLE_TRAITOR] .. " and appears as a generic " .. ROLE_STRINGS[ROLE_TRAITOR] .. " to them,"
         
@@ -73,7 +73,7 @@ hook.Add("TTTTutorialRoleText", "Rat Tutorial Role Text", function(playerRole)
         html = html .. "If a " .. getStyleString(ROLE_TEAM_MONSTER) .. ROLE_STRINGS[ROLE_TEAM_MONSTER] .. styleEnd .. ", " .. getStyleString(ROLE_JESTER) .. ROLE_STRINGS[ROLE_JESTER] .. styleEnd .. ", or " .. getStyleString(ROLE_TEAM_INDEPENDENT) .. ROLE_STRINGS[ROLE_TEAM_INDEPENDENT] .. styleEnd .. " kills them, they show as a " .. ROLE_STRINGS[ROLE_RAT] .. ".</div>"
 
         html = html .. divStart .. "The " .. ROLE_STRINGS[ROLE_RAT] .. " is largely a cowardly role. Positioning yourself to not be killed by an " .. ROLE_STRINGS[ROLE_INNOCENT] .. " is just as important as knowing when to reveal who the " .. ROLE_STRINGS_EXT[ROLE_TRAITOR] .. "are.</div>"
-        print(html)
+
         return html
     end
 end)

@@ -11,7 +11,7 @@ hook.Add("PreRegisterSWEP", "Outlaw DNA Test Weapon Override", function(swep, cl
                 local ply = sample.ply
 
                 if ply and IsValid(ply) and ply:IsPlayer() and ply:IsOutlaw() then
-                    self.ItemSamples[idx] = {}
+                    self.ItemSamples[idx] = {} -- TODO Test
                 end
             end
 

@@ -258,11 +258,11 @@ hook.Add("TTTTutorialRoleText", "Bounty Hunter Tutorial Text", function(playerRo
         local divStart = "<div style='margin-top: 10px;'>"
         local styleEnd = "</span>"
 
-        local html = "The " .. ROLE_STRINGS[ROLE_BOUNTYHUNTER] .. " is a member of the " .. getStyleString(ROLE_INNOCENT) .. "innocent team" .. styleEnd .. " whose job is to eliminate bounties placed on other terrorist by " ..  getStyleString(ROLE_DETECTIVE) .. ROLE_STRINGS_EXT[ROLE_DETECTIVE] .. styleEnd .. ".</div>"
+        local html = "The " .. ROLE_STRINGS[ROLE_BOUNTYHUNTER] .. " is a member of the " .. getStyleString(ROLE_INNOCENT) .. "innocent team" .. styleEnd .. " whose job is to eliminate bounties placed on other terrorist by " ..  getStyleString(ROLE_DETECTIVE) .. ROLE_STRINGS_EXT[ROLE_DETECTIVE] .. styleEnd .. "."
 
         html = html .. divStart .. "They effectively act as en extension of the detective, as elimination of placed bounties earns them a credit for use in a limited " .. getStyleString(ROLE_DETECTIVE) .. "shop" .. styleEnd .. ".</div>"
 
-        html = html .. divStart .. "The " .. ROLE_STRINGS[ROLE_BOUNTYHUNTER] .. " has a damage bonus against their targets, and the targets are highlighted for easier visibility. The karma ramifications for the kill are sent to the detective who placed the bounty.</div>"
+        html = html .. divStart .. "The " .. ROLE_STRINGS[ROLE_BOUNTYHUNTER] .. " also has a damage bonus against their targets, who are highlighted for easier visibility. Further, the karma ramifications for the kill are sent to the detective who placed the bounty.</div>"
 
         html = html .. divStart .. "(Killing bounties... it's free real estate)</div>"
         return html
