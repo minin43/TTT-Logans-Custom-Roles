@@ -31,7 +31,7 @@ hook.Add("TTTBeginRound", "Notify Traitors Of Rat", function()
 end)
 
 hook.Add("TTTOnCorpseCreated", "Rat Corpse Role Icon", function(ragdoll, _)
-    if ragdoll.killer then
+    if ragdoll.killer and ragdoll.was_role == ROLE_RAT then
         if not IsValid(ragdoll.killer) or not ragdoll.killer:IsPlayer() or INNOCENT_ROLES[ragdoll.killer:GetRole()] or DETECTIVE_ROLES[ragdoll.killer:GetRole()] then
             ragdoll.was_role = ROLE_TRAITOR
         elseif TRAITOR_ROLES[ragdoll.killer:GetRole()] then
@@ -42,13 +42,12 @@ end)
 
 hook.Add("EntityTakeDamage", "Rat Damage Reduction", function(vic, dmgInfo)
     local att = dmgInfo:GetAttacker()
-    -- print("rat damage reduction", att)
+
     if IsValid(att) then
         if not att:IsPlayer() then
             att = att:GetOwner()
-            -- print(att)
         end
-        -- print(att:IsPlayer(), att:IsRat(), vic:IsPlayer(), vic:IsTraitorTeam())
+
         if att:IsPlayer() and att:IsRat() and vic:IsPlayer() and vic:IsTraitorTeam() then
             if damageStyle == 1 then
                 dmgInfo:ScaleDamage(damageScaling or 0.25)

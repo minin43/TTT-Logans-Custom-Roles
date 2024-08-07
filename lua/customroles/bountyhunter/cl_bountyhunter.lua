@@ -186,7 +186,7 @@ net.Receive("BountyHunterDisableMenu", function()
     BountyHunter.MarkPanelToUpdate = true
 end)
 
-hook.Add("TTTEquipmentTabs", "Place Bounty Menu", function(propertySheet, frame)
+hook.Add("TTTEquipmentTabs", "Bounty Hunter Place Bounty Menu", function(propertySheet, frame)
     if BountyHunter.IsActive and LocalPlayer():IsDetectiveTeam() then
         propertySheet:AddSheet("Place Bounties", SetupPanel(propertySheet), BountyHunter.Icon16, false, false, "Bounty Hunter Menu")
     end
@@ -215,7 +215,7 @@ hook.Add("TTTTargetIDPlayerText", "Mark Target For Bounty Hunter", function(targ
     end
 end)
 
-hook.Add("TTTScoreboardPlayerRole", "Rat Scoreboard Alterations", function(targetPly, localPly, color, path)
+hook.Add("TTTScoreboardPlayerRole", "Bounty Hunter Scoreboard Alterations", function(targetPly, localPly, color, path)
     if localPly:IsBountyHunter() and BountyHunter.Target and targetPly == BountyHunter.Target then
         return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "TARGET", ROLE_TRAITOR -- TODO test
     end

@@ -17,9 +17,9 @@ ROLE.nameshort = "pro"
 
 ROLE.desc = [[You are a {role}! {comrades}
 
-You are on the {traitor} team. Press {menukey} to access a unique
+Press {menukey} to access a unique shop containing
 
-shop containing all ground-spawning weapons and ammo refills.]]
+all ground-spawning weapons and ammo refills.]]
 
 ROLE.team = ROLE_TEAM_TRAITOR
 
@@ -33,3 +33,5 @@ RegisterRole(ROLE)
 if SERVER then
     AddCSLuaFile()
 end
+
+-- The icon should probably be centered, not 1/4 the height

@@ -1,6 +1,6 @@
 -- Logan Christianson
 
-local shopIcon = ""
+local shopIcon = "vgui/ttt/roles/pro/.png"
 
 local function SetupPanel(propertySheet)
     local credits = LocalPlayer():GetCredits()
@@ -28,53 +28,53 @@ local function SetupPanel(propertySheet)
 
     local primary = vgui.Create("ArmoryColumn", panel)
     primary:SetPos(0, 0)
-    primary:SetSize(panel:GetWide() * 0.33, panel:GetTall())
+    primary:SetSize(panel:GetWide() * 0.33 - 1, panel:GetTall())
     primary:SetDisabled(not hasCredits)
-    primary:SetHasSlot(not LocalPlayer():CanCarryWeapon(WEAPON_HEAVY))
+    primary:SetHasSlot(not LocalPlayer():CanCarryType(WEAPON_HEAVY))
     primary:SetSweps(availablePrimaries)
     primary:SetTitle("Primary")
-    primary.Paint = function()
-        surface.SetDrawColor(255, 0, 0)
-        surface.DrawRect(0, 0, primary:GetWide(), primary:GetTall())
-    end
+    -- primary.Paint = function()
+    --     surface.SetDrawColor(255, 0, 0)
+    --     surface.DrawRect(0, 0, primary:GetWide(), primary:GetTall())
+    -- end
 
     local secondary = vgui.Create("ArmoryColumn", panel)
     secondary:SetPos(panel:GetWide() * 0.33, 0)
     secondary:SetSize(panel:GetWide() * 0.33, panel:GetTall())
     secondary:SetDisabled(not hasCredits)
-    secondary:SetHasSlot(not LocalPlayer():CanCarryWeapon(WEAPON_PISTOL))
+    secondary:SetHasSlot(not LocalPlayer():CanCarryType(WEAPON_PISTOL))
     secondary:SetSweps(availableSecondaries)
     secondary:SetTitle("Secondary")
-    secondary.Paint = function()
-        surface.SetDrawColor(0, 255, 0)
-        surface.DrawRect(0, 0, secondary:GetWide(), secondary:GetTall())
-    end
+    -- secondary.Paint = function()
+    --     surface.SetDrawColor(0, 255, 0)
+    --     surface.DrawRect(0, 0, secondary:GetWide(), secondary:GetTall())
+    -- end
 
     local grenade = vgui.Create("ArmoryColumn", panel)
     grenade:SetPos(panel:GetWide() * 0.66, 0)
     grenade:SetSize(panel:GetWide() * 0.33, panel:GetTall())
     grenade:SetDisabled(not hasCredits)
-    grenade:SetHasSlot(not LocalPlayer():CanCarryWeapon(WEAPON_NADE))
+    grenade:SetHasSlot(not LocalPlayer():CanCarryType(WEAPON_NADE))
     grenade:SetSweps(availableGrenades)
     grenade:SetIsGrenade(true)
     grenade:SetTitle("Grenade")
-    grenade.Paint = function()
-        surface.SetDrawColor(0, 0, 255)
-        surface.DrawRect(0, 0, grenade:GetWide(), grenade:GetTall())
-    end
+    -- grenade.Paint = function()
+    --     surface.SetDrawColor(0, 0, 255)
+    --     surface.DrawRect(0, 0, grenade:GetWide(), grenade:GetTall())
+    -- end
 
-    local creditsPnl = vgui.Create("DPanel", panel)
+    local creditsPnl = vgui.Create("DPanel", propertySheet)
     creditsPnl:SetPaintBackground(false)
     creditsPnl:SetHeight(32)
-    creditsPnl:SetPos(panel:GetWide() * 0.4 + 8, panel:GetTall() - 72)
+    creditsPnl:SetPos(propertySheet:GetWide() * 0.6, propertySheet:GetTall() - 32)
 
-    local img = vgui.Create("DImage", panel)
+    local img = vgui.Create("DImage", propertySheet)
     img:SetSize(32, 32)
     img:CopyPos(creditsPnl)
     img:SetImage("vgui/ttt/equip/coin.png")
     img:SetImageColor(color)
 
-    local lbl = vgui.Create("DLabel", panel)
+    local lbl = vgui.Create("DLabel", propertySheet)
     lbl:CopyPos(creditsPnl)
     lbl:MoveRightOf(img)
     lbl:SetTextColor(color)
@@ -85,14 +85,14 @@ local function SetupPanel(propertySheet)
     return panel
 end
 
-hook.Add("TTTEquipmentTabs", "Place Bounty Menu", function(propertySheet, frame)
+hook.Add("TTTEquipmentTabs", "Professional Place Bounty Menu", function(propertySheet, frame)
     if LocalPlayer():IsProfessional() then
         propertySheet:AddSheet("Armory", SetupPanel(propertySheet), shopIcon, false, false, "Weapon Shop Menu")
     end
 end)
 
 hook.Add("TTTPlayerCanSendCredits", "Profesional Sending Credits", function(sender, credits, senderHasShop, senderCanSend)
-    if sender == LocalPlayer() and send:IsProfessional() then
+    if sender == LocalPlayer() and sender:IsProfessional() then
         return false
     end
 end)

@@ -3,11 +3,11 @@
 util.AddNetworkString("ProfessionalArmoryBuyWep")
 util.AddNetworkString("ProfessionalArmoryBuyAmmo")
 
-local AmmoVals = []
+local AmmoVals = {}
 
 hook.Add("OnEntityCreated", "Professional Ammo Ent Tracking", function(ent)
     if ent and IsValid(ent) and ent.Base and ent.Base == "base_ammo_ttt" then
-        AmmoVals[ent.AmomType] = {amount = ent.AmmoAmount, max = ent.AmmoMax}
+        AmmoVals[ent.AmmoType] = {amount = ent.AmmoAmount, max = ent.AmmoMax}
     end
 end)
 
@@ -19,7 +19,7 @@ hook.Add("ScalePlayerDamage", "Professional Damage Scaling", function(ply, hitgr
     end
 end)
 
-local GetAmmoMaxFromAmmoType(ammoType)
+local function GetAmmoMaxFromAmmoType(ammoType)
     local stored = AmmoVals[ammoType]
 
     if stored then
@@ -29,7 +29,7 @@ local GetAmmoMaxFromAmmoType(ammoType)
     return 10
 end
 
-local GetAmmoAmountFromAmmoType(ammoType)
+local function GetAmmoAmountFromAmmoType(ammoType)
     local stored = AmmoVals[ammoType]
 
     if stored then

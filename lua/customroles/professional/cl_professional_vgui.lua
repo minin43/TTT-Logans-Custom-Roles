@@ -26,11 +26,11 @@ function weaponPanel:Paint(w, h)
     if not self then return end
 
     draw.SimpleText(self.WeaponName, "cool_large", 4, 4, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-    draw.SimpleText("DAMAGE: " + self.Damage, "DermaDefault", 4, h * 0.5, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    draw.SimpleText("FIRERATE: " + self.Firerate + " RPM", "DermaDefault", 4, h - 4, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
-    draw.SimpleText("RECOIL: " + self.Recoil + "%", "DermaDefault", w - 4, 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
-    draw.SimpleText("ACCURACY: " + self.Accuracy + "%", "DermaDefault", w - 4, h * 0.5, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-    draw.SimpleText("MAGAZINE: " + self.Magazine, "DermaDefault", w - 4, h - 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+    draw.SimpleText("DAMAGE: " .. self.Damage, "DermaDefault", 4, h * 0.5, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("FIRERATE: " .. self.Firerate .. " RPM", "DermaDefault", 4, h - 4, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+    draw.SimpleText("RECOIL: " .. self.Recoil .. "%", "DermaDefault", w - 4, 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+    draw.SimpleText("ACCURACY: " .. self.Accuracy .. "%", "DermaDefault", w - 4, h * 0.5, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("MAGAZINE: " .. self.Magazine, "DermaDefault", w - 4, h - 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
 end
 
 vgui.Register("ArmoryWeaponPanel", weaponPanel, "DPanel")
@@ -39,7 +39,8 @@ local armoryColumn = {}
 armoryColumn.Disabled = false
 armoryColumn.HasSlot = false
 armoryColumn.IsGrenade = false
-armoryColumn.Sweps = []
+armoryColumn.Sweps = {}
+armoryColumn.Title = ""
 
 function armoryColumn:SetDisabled(disabled)
     self.Disabled = disabled
@@ -55,8 +56,12 @@ function armoryColumn:SetHasSlot(hasSlot)
     self:RefreshPanel()
 end
 
+function armoryColumn:SetTitle(newTitle)
+    self.Title = newTitle
+end
+
 function armoryColumn:SetSweps(sweps)
-    self.Sweps = []
+    self.Sweps = {}
     
     for _, className in ipairs(sweps) do
         local tab = weapons.Get(className)

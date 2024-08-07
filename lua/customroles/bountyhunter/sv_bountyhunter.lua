@@ -129,7 +129,7 @@ hook.Add("EntityTakeDamage", "Scale Bounty Hunter Damage", function(target, dmgI
     end
 end)
 
-hook.Add("TTTBeginRound", "Notify Traitors Of Rat", function()
+hook.Add("TTTBeginRound", "Notify Detective Of Bounty Hunter", function()
     if player.IsRoleLiving(ROLE_BOUNTYHUNTER) then
         for _, ply in ipairs(player.GetAll()) do
             if ply:IsDetectiveTeam() then

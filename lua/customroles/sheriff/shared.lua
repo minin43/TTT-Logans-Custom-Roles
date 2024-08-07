@@ -1,6 +1,3 @@
---[[
-Detective who can only use sidearms, but sidearm damage is buffed. Maybe has a fun effect where the first shot within the first 1 second of equipping a sidearm will 1-shot anyone instead?
-]]
 -- Logan Christianson
 
 local ROLE = {}
@@ -11,13 +8,16 @@ ROLE.nameplural = "Sheriffs"
 ROLE.nameext = "a Sheriff"
 ROLE.nameshort = "srf"
 
-ROLE.desc = [[You are a {role}! You are on the {innocent} team.
+ROLE.desc = [[You are a {role}!
 
-]]
+You are unable to wield primary weapons, but all secondary
 
-ROLE.team = ROLE_TEAM_INNOCENT
+weapons have become more powerful in your hands!]]
 
-ROLE.shop = {}
+ROLE.team = ROLE_TEAM_DETECTIVE
+
+-- Sheriffs cannot hold slot 3 weapons, even if they buy them. Do not place primary/slot 3/WEAPON_HEAVY type weapons in their shop
+ROLE.shop = {"item_armor", "weapon_ttt_binoculars", "weapon_ttt_defuser", "weapon_ttt_health_station", "weapon_ttt_cse", "weapon_ttt_teleport",}
 ROLE.loadout = {}
 ROLE.translations = {}
 

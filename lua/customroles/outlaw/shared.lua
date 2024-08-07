@@ -1,4 +1,4 @@
-//Logan Christianson
+// Logan Christianson
 
 local ROLE = {}
 
@@ -8,11 +8,11 @@ ROLE.nameplural = "Outlaws"
 ROLE.nameext = "an Outlaw"
 ROLE.nameshort = "otl"
 
-ROLE.desc = [[You are an {role}!
+ROLE.desc = [[You are an {role}! {comrades}
 
-You are on the {traitor} team. You are invisible to non-friendly
-Radar, leave no DNA trail, and come equipped with a disguiser,
-but do not have access to a shop.]]
+You are immune to a variety of detective effects, and spawn with
+
+a disguiser. Press {menukey} to access it and a very basic shop.]]
 
 ROLE.team = ROLE_TEAM_TRAITOR
 

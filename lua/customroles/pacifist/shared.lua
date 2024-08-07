@@ -28,3 +28,5 @@ RegisterRole(ROLE)
 if SERVER then
     AddCSLuaFile()
 end
+
+-- Pretty sure I fucked up the icons and forgot to add the backshadow
