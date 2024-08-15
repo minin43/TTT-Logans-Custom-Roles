@@ -10,13 +10,15 @@ hook.Add("TTTTutorialRoleText", "Sheriff Tutorial Role Text", function(playerRol
         local divStart = "<div style='margin-top: 10px;'>"
         local styleEnd = "</span>"
 
-        local html = " The " .. ROLE_STRINGS[ROLE_SHERIFF] .. " is a member of the " .. getStyleString(ROLE_DETECTIVE) .. ROLE_STRINGS[ROLE_DETECTIVE] .. " team" .. styleEnd .. " whose goal is to find and eliminate all Innocent team enemies."
+        local html = "The " .. ROLE_STRINGS[ROLE_SHERIFF] .. " is a member of the " .. getStyleString(ROLE_DETECTIVE) .. ROLE_STRINGS[ROLE_DETECTIVE] .. " team" .. styleEnd .. " whose goal is to find and eliminate all Innocent team enemies."
 
-        -- html = html .. divStart .. "Existing outside the law, they do not appear on non-traitor " .. getStyleString(ROLE_DETECTIVE) .. "radar" .. styleEnd .. ", cannot be traced via the " .. getStyleString(ROLE_DETECTIVE) .. "DNA Scanner" .. styleEnd
+        html = html .. divStart .. "They have access to the regular assortment of " .. ROLE_STRINGS[ROLE_DETECTIVE] .. " equipment, but with an added twist:<ul style='margin-bottom: 0px; padding-bottom: 0px;'>"
 
-        -- html = html .. ", and come equipped with a " .. getStyleString(ROLE_TRAITOR) .. "Disguiser" .. styleEnd .. ", leaving them nigh-untraceable.</div>"
+        html = html .. "<li>They are unable to hold any primary weapons (most weapons in slot 3), but receive a general damage buff to all sidearms used</li>"
 
-        -- html = html .. divStart .. "This untracability comes at a cost, however, as the " .. ROLE_STRINGS[ROLE_OUTLAW] .. " has no access to any kind of traitor shop.</div>"
+        html = html .. "<li>If enabled on the server, for the first second after equipping a secondary weapon (most weapons in slot 2), the first bullet fired receives a major damage bonus, instantly killing any terrorist it damages</li>"
+
+        html = html .. "<li>If enabled on the server, the instant-kill effect may continue after each kill, as long as no bullet is missed</li></ul></div>"
 
         return html
     end

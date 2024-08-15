@@ -1,7 +1,9 @@
 // Logan Christianson
 
+LANG.AddToLanguage("english", "outlaw_dna", "Could not verify DNA source! Sample discarded.")
+
 hook.Add("TTTRadarPlayerRender", "Outlaw Radar", function(localPly, targetData, pingColor, pingIsHidden)
-    if targetData.role == ROLE_OUTLAW and not localPly:IsTeamTraitor() then
+    if targetData.role == ROLE_OUTLAW and not localPly:IsTraitorTeam() then
         return pingColor, true
     end
 end)
@@ -22,7 +24,7 @@ hook.Add("TTTTutorialRoleText", "Outlaw Tutorial Role Text", function(playerRole
 
         html = html .. ", and come equipped with a " .. getStyleString(ROLE_TRAITOR) .. "Disguiser" .. styleEnd .. ", leaving them nigh-untraceable.</div>"
 
-        html = html .. divStart .. "This untracability comes at a cost, however, as the " .. ROLE_STRINGS[ROLE_OUTLAW] .. " has no access to any kind of traitor shop.</div>"
+        html = html .. divStart .. "This untracability comes at a cost, however, as the " .. ROLE_STRINGS[ROLE_OUTLAW] .. " only has access to a severely limited traitor shop.</div>"
 
         return html
     end

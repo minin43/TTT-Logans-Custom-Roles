@@ -178,7 +178,7 @@ net.Receive("BountyHunterResetTarget", function()
     BountyHunter.TargetHasBounty = false
     BountyHunter.MarkPanelToUpdate = true
 
-    RADAR:Clear() -- TODO test
+    RADAR:Clear()
 end)
 
 net.Receive("BountyHunterDisableMenu", function()
@@ -217,7 +217,7 @@ end)
 
 hook.Add("TTTScoreboardPlayerRole", "Bounty Hunter Scoreboard Alterations", function(targetPly, localPly, color, path)
     if localPly:IsBountyHunter() and BountyHunter.Target and targetPly == BountyHunter.Target then
-        return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "TARGET", ROLE_TRAITOR -- TODO test
+        return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "TARGET", ROLE_TRAITOR
     end
 end)
 
