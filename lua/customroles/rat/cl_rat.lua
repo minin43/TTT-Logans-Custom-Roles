@@ -62,6 +62,8 @@ hook.Add("TTTTutorialRoleText", "Rat Tutorial Role Text", function(playerRole)
             html = html .. " and can damage, but not outright kill, any of them.</div>"
         elseif style == 3 then
             html = html .. " and is able to otherwise regularly damage them.</div>"
+        elseif style == 4 then
+            html = html .. "but cannot deal damage until they are the last remaining innocent.</div>"
         else
             html = html .. "</div>"
         end

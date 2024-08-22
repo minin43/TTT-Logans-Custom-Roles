@@ -1,6 +1,8 @@
 // Logan Christianson
 
-LANG.AddToLanguage("english", "outlaw_dna", "Could not verify DNA source! Sample discarded.")
+hook.Add("InitPostEntity", "Add Outlaw LANG text", function()
+    LANG.AddToLanguage("english", "outlaw_dna", "Could not verify DNA source! Sample discarded.")
+end)
 
 hook.Add("TTTRadarPlayerRender", "Outlaw Radar", function(localPly, targetData, pingColor, pingIsHidden)
     if targetData.role == ROLE_OUTLAW and not localPly:IsTraitorTeam() then

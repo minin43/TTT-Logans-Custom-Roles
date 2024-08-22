@@ -17,9 +17,9 @@ ROLE.nameshort = "pro"
 
 ROLE.desc = [[You are a {role}! {comrades}
 
-Press {menukey} to access a unique shop containing
+Press {menukey} to access a unique shop containing all ground-
 
-all ground-spawning weapons and ammo refills.]]
+spawning weapons and ammo refills for them.]]
 
 ROLE.team = ROLE_TEAM_TRAITOR
 

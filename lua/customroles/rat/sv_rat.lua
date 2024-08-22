@@ -1,6 +1,7 @@
 --// Logan Christianson
 local damageStyle = GetConVar("ttt_rat_damage_style"):GetInt()
 local damageScaling = GetConVar("ttt_rat_damage_scaling"):GetFloat()
+local damageEnabled = false
 
 hook.Add("TTTDeathNotifyOverride", "Override Death Notification For Rats", function(vic, wep, att, reason, attName, attRole)
     if attRole and attRole == ROLE_RAT then
@@ -40,6 +41,37 @@ hook.Add("TTTOnCorpseCreated", "Rat Corpse Role Icon", function(ragdoll, _)
     end
 end)
 
+local function CheckRatDamageEnabled()
+    local innocentsAlive = 0
+    local rats = {}
+
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:IsActive() and ply:IsInnocentTeam() then
+            innocentsAlive = innocentsAlive + 1
+
+            if ply:IsRat() then
+                table.insert(rats, ply)
+            end
+        end
+    end
+
+    if innocentsAlive > 0 and #rats == innocentsAlive then
+        damageEnabled = true
+         
+        for _, ply in ipairs(rats) do
+            ply:ChatPrint("Only the innocent Rat(s) remain standing! Guess you're gonna have to get your hands bloody after all.")
+        end
+    end
+end
+
+hook.Add("PlayerDeath", "Rat DamageStyle 4 Enabled On Player Death", CheckRatDamageEnabled)
+
+hook.Add("PlayerDisconnected", "Rat DamageStyle 4 Enabled On Player Leave", CheckRatDamageEnabled)
+
+hook.Add("TTTBeginRound", "Rat DamageStyle 4 Reset", function()
+    damageEnabled = false
+end)
+
 hook.Add("EntityTakeDamage", "Rat Damage Reduction", function(vic, dmgInfo)
     local att = dmgInfo:GetAttacker()
 
@@ -48,12 +80,24 @@ hook.Add("EntityTakeDamage", "Rat Damage Reduction", function(vic, dmgInfo)
             att = att:GetOwner()
         end
 
-        if att:IsPlayer() and att:IsRat() and vic:IsPlayer() and vic:IsTraitorTeam() then
-            if damageStyle == 1 then
-                dmgInfo:ScaleDamage(damageScaling or 0.25)
-            elseif damageStyle == 2 then
-                if vic:Health() <= dmgInfo:GetDamage() then
+        if att:IsPlayer() and att:IsRat() and vic:IsPlayer() then
+            if vic:IsTraitorTeam() then
+                if damageStyle == 1 then
+                    dmgInfo:ScaleDamage(damageScaling or 0.25)
+                elseif damageStyle == 2 then
+                    if vic:Health() <= dmgInfo:GetDamage() then
+                        dmgInfo:ScaleDamage(0)
+                        return true
+                    end
+                end
+            end
+
+            if damageStyle == 4 then
+                if damageEnabled then
+                    dmgInfo:ScaleDamage(damageScaling or 0.25)
+                else
                     dmgInfo:ScaleDamage(0)
+                    return true
                 end
             end
         end
