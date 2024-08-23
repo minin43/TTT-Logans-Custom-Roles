@@ -1,3 +1,26 @@
 - Traitor who gets a reduced amount of all potential credits available at the start of the round
 - Traitor who makes good on my "upgrades" change
 - Something new with the Pacifist, because the Rat encroached on the old version I had planned
+    - Prevent others from doing damage?
+        - Victory gained when certain amount of damage is blocked
+- Thief/Pickpocket
+    - Information gathering
+        - Ability to see and steal gear
+- Pathologist
+    - Anti independent class
+    - Cleanse ability, potential to change a monster into an innocent
+        - Hypnotist or Mad Scientist but for innocent
+        - Time delay activation
+    - Cleanse plague, zombies, hivemind
+        - Anti Mad Scientist
+        - Anti Zombification Device
+        - Plague cure
+        - Hive Mind weaponized "cure"
+            - or fixes induvidual player
+- Werewolf
+    - ?
+- Non-innocent role that benefits from proximity to Sherrif to insight distrust (Wolf)
+- Traitor role or item that allows reversal of time/teleporting (effectively venting in amongus)
+- AOE (wizard, pyromancer, etc)
+- Traitor with traps?
+- Traitor with Renata or Tryndamere ability
