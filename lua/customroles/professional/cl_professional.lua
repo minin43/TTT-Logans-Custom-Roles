@@ -5,15 +5,15 @@ local numColsVar = CreateClientConVar("ttt_bem_cols", 4, true, false, "Sets the 
 local numRowsVar = CreateClientConVar("ttt_bem_rows", 5, true, false, "Sets the number of rows in the Traitor/Detective menu's item list.")
 local itemSizeVar = CreateClientConVar("ttt_bem_size", 64, true, false, "Sets the item size in the Traitor/Detective menu's item list.")
 local color_darkened = Color(255, 255, 255, 80)
+local emptyIcon = "vgui/ttt/roles/pro/icon_template.png"
+local tabIcon = "vgui/ttt/roles/pro/ammo-box.png"
 
 local function DoesValueMatch(item, data, value)
-    if not item[data] then return false end
-
     local itemdata = item[data]
-    if isfunction(itemdata) then
-        itemdata = itemdata()
-    end
-    return itemdata and StringFind(StringLower(LANG.TryTranslation(itemdata)), StringLower(value), 1, true)
+
+    if not itemdata then return false end
+
+    return string.find(string.lower(LANG.TryTranslation(itemdata)), string.lower(value), 1, true)
 end
 
 local function SetupPanel(propertySheet)
@@ -23,10 +23,6 @@ local function SetupPanel(propertySheet)
     if credits < 1 then color = Color(220, 60, 60, 255) end
 
     local availableWeapons = {Primaries = {}, Secondaries = {}, Grenades = {}}
-
-    local function IsValidCustomBase(weapon)
-        return weapon.WeaponID and weapon.Primary -- What else?
-    end
 
     local function ExtractWeaponInfo(weapon, isGrenadeSlot)
         local equipData = weapon.EquipMenuData or {}
@@ -40,14 +36,18 @@ local function SetupPanel(propertySheet)
         local magazine = "Magazine: " .. (primary.ClipSize or 0) .. " round(s)"
         local ammo = "Ammo: " .. (weapon.Ammo or primary.Ammo or "None")
 
+        if primary.NumShots or weapon.Shots then
+            damage = "Damage: " .. math.max((weapon.Damage or primary.Damage or 1) * (primary.NumShots or weapon.Shots), 1)
+        end
+
         if isGrenadeSlot then
             return {
                 id = weapon.ClassName,
                 material = weapon.Icon or "vgui/ttt/icon_id",
                 model = equipData.model or equipData.WorldModel or "models/weapons/w_bugbait.mdl",
                 name = name,
-                damage = "---",
-                firerate = "---",
+                damage = "",
+                firerate = "",
                 recoil = "",
                 accuracy = "",
                 magazine = "",
@@ -70,7 +70,7 @@ local function SetupPanel(propertySheet)
     end
 
     for _, swep in pairs(weapons.GetList()) do
-        if (swep.Base == "weapon_tttbase" or swep.Base == "weapon_tttbasegrenade" or IsValidCustomBase(swep)) and swep.Spawnable and swep.AutoSpawnable then
+        if (swep.Base == "weapon_tttbase" or swep.Base == "weapon_tttbasegrenade" or ProfessionalIsValidCustomWeaponBase(swep)) and swep.Spawnable and swep.AutoSpawnable then
             if swep.Slot == 2 then table.insert(availableWeapons.Primaries, ExtractWeaponInfo(swep))
             elseif swep.Slot == 1 then table.insert(availableWeapons.Secondaries, ExtractWeaponInfo(swep))
             elseif swep.Slot == 3 then table.insert(availableWeapons.Grenades, ExtractWeaponInfo(swep, true))
@@ -112,17 +112,50 @@ local function SetupPanel(propertySheet)
     dsearch.OnLoseFocus = function() dframe:SetKeyboardInputEnabled(false) end
 
     --- Construct icon listing
-    local dlist = vgui.Create("EquipSelect", dequip)
-    dlist:SetPos(0, dsearchheight + dsearchpadding)
-    dlist:SetSize(dlistWide, dlistHeight - dsearchheight - dsearchpadding)
-    dlist:EnableVerticalScrollbar()
-    dlist:EnableHorizontal(true)
+    local listHeaderHeight = 16
+    local headerMargin = 4
+    local pListHeight = (itemSize + 2) * 2 + 2
+    local dlistPFrame = vgui.Create("DPanel", dequip)
+    dlistPFrame:SetPos(0, dsearchheight + dsearchpadding)
+    dlistPFrame:SetSize(dlistWide, pListHeight + listHeaderHeight)
+    dlistPFrame.Paint = function()
+        draw.DrawText("Primaries", "TabLarge", headerMargin)
+    end
+    local dlistP = vgui.Create("EquipSelect", dlistPFrame)
+    dlistP:SetPos(0, listHeaderHeight)
+    dlistP:SetSize(dlistWide, pListHeight)
+    dlistP:EnableVerticalScrollbar()
+    dlistP:EnableHorizontal(true)
+
+    local remainingListHeight = (dlistHeight - dsearchheight - dsearchpadding - dlistPFrame:GetTall()) / 2
+    local dlistSFrame = vgui.Create("DPanel", dequip)
+    dlistSFrame:SetPos(0, dsearchheight + dsearchpadding + dlistPFrame:GetTall())
+    dlistSFrame:SetSize(dlistWide, remainingListHeight)
+    dlistSFrame.Paint = function()
+        draw.DrawText("Secondaries", "TabLarge", headerMargin)
+    end
+    local dlistS = vgui.Create("EquipSelect", dlistSFrame)
+    dlistS:SetPos(0, listHeaderHeight)
+    dlistS:SetSize(dlistWide, remainingListHeight - listHeaderHeight)
+    dlistS:EnableVerticalScrollbar()
+    dlistS:EnableHorizontal(true)
+
+    local dlistGFrame = vgui.Create("DPanel", dequip)
+    dlistGFrame:SetPos(0, dsearchheight + dsearchpadding + dlistPFrame:GetTall() + dlistSFrame:GetTall())
+    dlistGFrame:SetSize(dlistWide, remainingListHeight)
+    dlistGFrame.Paint = function()
+        draw.DrawText("Grenades/Tertiary", "TabLarge", headerMargin)
+    end
+    local dlistG = vgui.Create("EquipSelect", dlistGFrame)
+    dlistG:SetPos(0, listHeaderHeight)
+    dlistG:SetSize(dlistWide, remainingListHeight - listHeaderHeight)
+    dlistG:EnableVerticalScrollbar()
+    dlistG:EnableHorizontal(true)
 
     local bw, bh = 102, 25
 
     -- Whole right column
     local dih = frameHeight - bh - margin * 5
-    -- local dinfoWide = frameWide - dlistWide - margin*6 - 2
     local dinfobg = vgui.Create("DPanel", dequip)
     dinfobg:SetPaintBackground(false)
     dinfobg:SetSize(dinfoWide - margin, dih)
@@ -155,34 +188,121 @@ local function SetupPanel(propertySheet)
 
     dfields.name:SetFont("TabLarge")
 
-    dlist.OnActivePanelChanged = function(self, _, new)
-        if new and new.item then
-            for k, v in pairs(new.item) do
-                if dfields[k] then
-                    dfields[k]:SetText(LANG.TryTranslation(v))
-                    dfields[k]:SetAutoStretchVertical(true)
-                    dfields[k]:SetWrap(true)
-                end
-            end
-        else
-            for _, v in pairs(dfields) do
-                if v then
-                    v:SetText("---")
-                    v:SetAutoStretchVertical(true)
-                    v:SetWrap(true)
-                end
-            end
-        end
+    -- item info, ammo subpanels
+    local primary, secondary, grenade = nil, nil, nil
+    local primaryName, secondaryName = "No Weapon", "No Weapon"
+    local clr = Color(210, 210, 210)
 
-        -- dconfirm:SetDisabled() -- TODO
+    local dinfoEquip = vgui.Create("DPanel", dinfo)
+    dinfoEquip:SetPos(0, dinfo:GetTall() / 3)
+    dinfoEquip:SetSize(dinfo:GetWide(), dinfo:GetTall() / 3 * 2)
+    dinfoEquip.Paint = function(_, w, h)
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawLine(w * 0.5, 3, w * 0.5, h - 2)
+        surface.DrawLine(3, 0, w - 3, 0)
+
+        draw.DrawText("Equipped\nPrimary", "TabLarge", w * 0.25, 8, clr, TEXT_ALIGN_CENTER)
+        draw.DrawText("Equipped\nSecondary", "TabLarge", w * 0.75, 8, clr, TEXT_ALIGN_CENTER)
     end
 
-    local dhelp = vgui.Create("DPanel", dinfobg)
-    dhelp:SetPaintBackground(false)
-    dhelp:SetSize(dinfoWide, 64)
-    dhelp:MoveBelow(dinfo, margin)
+    if not LocalPlayer():CanCarryType(WEAPON_HEAVY) then
+        for k, v in ipairs(ply:GetWeapons()) do
+            if v:GetSlot() == 2 and v:GetSlotPos() == 0 then
+                primary = v
+            end
+        end
+    end
+    if not LocalPlayer():CanCarryType(WEAPON_PISTOL) then
+        for k, v in ipairs(ply:GetWeapons()) do
+            if v:GetSlot() == 1 and v:GetSlotPos() == 0 then
+                secondary = v
+            end
+        end
+    end
+    if not LocalPlayer():CanCarryType(WEAPON_NADE) then
+        for k, v in ipairs(ply:GetWeapons()) do
+            if v:GetSlot() == 3 and v:GetSlotPos() == 1000 then
+                grenade = v
+            end
+        end
+    end
 
-    local function FillEquipmentListWithSlot(itemlist, isDisabled)
+    local buttonHeight = (dinfoEquip:GetTall() * 0.85) - (bh * 0.5)
+    local pammo = vgui.Create("DButton", dinfoEquip)
+    pammo:SetPos((dinfoEquip:GetWide() * 0.25) - (bw * 0.5), buttonHeight)
+    pammo:SetSize(bw, bh)
+    pammo:SetDisabled(true)
+    pammo:SetText("Buy Ammo")
+    pammo.DoClick = function()
+        net.Start("ProfessionalArmoryBuyAmmo")
+            net.WriteString(primary:GetClass())
+        net.SendToServer()
+
+        dframe:Close()
+    end
+
+    local sammo = vgui.Create("DButton", dinfoEquip)
+    sammo:SetPos((dinfoEquip:GetWide() * 0.75) - (bw * 0.5), buttonHeight)
+    sammo:SetSize(bw, bh)
+    sammo:SetDisabled(true)
+    sammo:SetText("Buy Ammo")
+    sammo.DoClick = function()
+        net.Start("ProfessionalArmoryBuyAmmo")
+            net.WriteString(secondary:GetClass())
+        net.SendToServer()
+
+        dframe:Close()
+    end
+
+    local function CreateEmptyIcon(x, y)
+        local icon = vgui.Create("SimpleIcon", dinfoEquip)
+        icon:SetIconSize(itemSize)
+        icon:SetIcon(emptyIcon)
+        icon:SetPos(x, y)
+    end
+
+    local pIconX = (dinfoEquip:GetWide() * 0.25) - (itemSize * 0.5)
+    local iconY = (dinfoEquip:GetTall() * 0.45) - (itemSize * 0.5)
+    if primary then
+        local primaryName = primary.ShopName or primary.PrintName or "Unnamed weapon"
+
+        local icon = vgui.Create("SimpleIcon", dinfoEquip)
+        icon:SetIconSize(itemSize)
+        icon:SetIcon(primary.Icon)
+        icon:SetTooltip(LANG.TryTranslation(primaryName))
+        icon:SetPos(pIconX, iconY)
+
+        local iconLabel = vgui.Create("DLabel", dinfoEquip)
+        iconLabel:SetText(primaryName)
+        iconLabel:SizeToContents()
+        iconLabel:SetPos((dinfoEquip:GetWide() * 0.25) - (iconLabel:GetWide() * 0.5), (dinfoEquip:GetTall() * 0.45) + (itemSize * 0.5) + 2)
+
+        pammo:SetDisabled(not LocalPlayer():ProfessionalCanRefillAmmoByWeaponClass(primary:GetClass()) or not hasCredits)
+    else
+        CreateEmptyIcon(pIconX, iconY)
+    end
+
+    local sIconX = (dinfoEquip:GetWide() * 0.75) - (itemSize * 0.5)
+    if secondary then
+        local secondaryName = secondary.ShopName or secondary.PrintName or "Unnamed weapon"
+
+        local icon = vgui.Create("SimpleIcon", dinfoEquip)
+        icon:SetIconSize(itemSize)
+        icon:SetIcon(secondary.Icon)
+        icon:SetTooltip(LANG.TryTranslation(secondaryName))
+        icon:SetPos(sIconX, iconY)
+
+        local iconLabel = vgui.Create("DLabel", dinfoEquip)
+        iconLabel:SetText(secondaryName)
+        iconLabel:SizeToContents()
+        iconLabel:SetPos((dinfoEquip:GetWide() * 0.75) - (iconLabel:GetWide() * 0.5), (dinfoEquip:GetTall() * 0.45) + (itemSize * 0.5) + 2)
+
+        sammo:SetDisabled(not LocalPlayer():ProfessionalCanRefillAmmoByWeaponClass(secondary:GetClass()) or not hasCredits)
+    else
+        CreateEmptyIcon(sIconX, iconY)
+    end
+
+    local function FillEquipmentListWithSlot(dlist, itemlist, isDisabled)
         for _, item in pairs(itemlist) do
             local icon = nil
 
@@ -203,6 +323,7 @@ local function SetupPanel(propertySheet)
 
             if isDisabled then
                 icon:SetIconColor(color_darkened)
+                icon:SetTooltip("Weapon already equipped in this slot!")
                 icon.Disabled = true
             end
 
@@ -210,100 +331,120 @@ local function SetupPanel(propertySheet)
         end
     end
 
-    local function FillOutListRow(numberOfIcons)
-        local actualCount = numberOfIcons + 1
-        local toFill = actualCount % 4
-
-        for i = 1, toFill do
-            print("creating empty panel")
-            local panel = vgui.Create("DPanel")
-            -- panel:SetSize(itemSize, itemSize)
-            panel.Paint = function() end
-
-            dlist:AddPanel(panel)
-        end
-    end
-
     local function FillEquipmentList(allItems)
-        dlist:Clear()
+        dlistP:Clear()
+        dlistS:Clear()
+        dlistG:Clear()
 
-        local primHeader = vgui.Create("DPanel")
-        primHeader:SetSize(itemSize, itemSize)
-        primHeader.Paint = function()
-            surface.SetDrawColor(0, 0, 0)
-            surface.DrawRect(0, 0, primHeader:GetWide(), primHeader:GetTall())
-            draw.SimpleText("Primary Slot")
-        end
-        dlist:AddPanel(primHeader)
-        FillEquipmentListWithSlot(allItems.Primaries, true) -- TODO determine when to disable the weapons due to what player is holding
-        FillOutListRow(#allItems.Primaries)
+        FillEquipmentListWithSlot(dlistP, allItems.Primaries, primary)
+        FillEquipmentListWithSlot(dlistS, allItems.Secondaries, secondary)
+        FillEquipmentListWithSlot(dlistG, allItems.Grenades, grenade)
 
-        local secHeader = vgui.Create("DPanel", dlist)
-        secHeader.Paint = function()
-            draw.SimpleText("Secondary Slot")
-        end
-        dlist:AddPanel(secHeader)
-        FillEquipmentListWithSlot(allItems.Secondaries, false)
-        FillOutListRow(#allItems.Secondaries)
-
-        local grenHeader = vgui.Create("DPanel", dlist)
-        grenHeader.Paint = function()
-            draw.SimpleText("Tertiary Slot")
-        end
-        dlist:AddPanel(grenHeader)
-        FillEquipmentListWithSlot(allItems.Grenades, false)
-        -- FillOutListRow(#allItems.Grenades) -- This necessary?
-
-        dlist:SelectPanel(dlist:GetItems()[2])
+        dlistP:SelectPanel(dlistP:GetItems()[1])
     end
 
     dsearch.OnValueChange = function(_, value)
-        -- local roleitems = GetEquipmentForRole(ply:GetRole(), ply:IsDetectiveLike() and not ply:IsDetectiveTeam(), false)
-        local filtered = {}
-        for _, tbl in pairs(availableWeapons) do
+        local filtered = {Primaries = {}, Secondaries = {}, Grenades = {}}
+        for slot, tbl in pairs(availableWeapons) do
             for _, wep in pairs(tbl) do
                 if v and DoesValueMatch(wep, "name", value) then
-                    TableInsert(filtered, wep)
+                    TableInsert(filtered[slot], wep)
                 end
             end
         end
+
         FillEquipmentList(filtered)
     end
 
-    dhelp:SizeToContents()
+    local selectedGun = nil
+    local dconfirm = vgui.Create("DButton", dinfobg)
+    dconfirm:SetPos(0, dih - bh * 2)
+    dconfirm:SetSize(bw, bh)
+    dconfirm:SetDisabled(true)
+    dconfirm:SetText(LANG.GetTranslation("equip_confirm"))
+    dconfirm.DoClick = function()
+        if selectedGun then
+            net.Start("ProfessionalArmoryBuyWep")
+                net.WriteString(selectedGun)
+            net.SendToServer()
 
-    -- local dconfirm = vgui.Create("DButton", dinfobg)
-    -- dconfirm:SetPos(0, dih - bh * 2)
-    -- dconfirm:SetSize(bw, bh)
-    -- dconfirm:SetDisabled(true)
-    -- dconfirm:SetText(LANG.GetTranslation("equip_confirm"))
+            dframe:Close()
+        end
+    end
 
-    -- local creditsPnl = vgui.Create("DPanel", dequip) -- dinfobg) ?
-    -- creditsPnl:SetPaintBackground(false)
-    -- creditsPnl:SetHeight(32)
-    -- creditsPnl:SetPos(dequip:GetWide() * 0.6, dequip:GetTall() - 32)
+    local creditsPnl = vgui.Create("DPanel", dequip)
+    creditsPnl:SetPaintBackground(false)
+    creditsPnl:SetHeight(32)
+    creditsPnl:SetPos(dequip:GetWide() * 0.5 + 13, dequip:GetTall() - 72 - 17)
 
-    -- local img = vgui.Create("DImage", dequip)
-    -- img:SetSize(32, 32)
-    -- img:CopyPos(creditsPnl)
-    -- img:SetImage("vgui/ttt/equip/coin.png")
-    -- img:SetImageColor(color)
+    local img = vgui.Create("DImage", dequip)
+    img:SetSize(32, 32)
+    img:CopyPos(creditsPnl)
+    img:SetImage("vgui/ttt/equip/coin.png")
+    img:SetImageColor(color)
 
-    -- local lbl = vgui.Create("DLabel", dequip)
-    -- lbl:CopyPos(creditsPnl)
-    -- lbl:MoveRightOf(img)
-    -- lbl:SetTextColor(color)
-    -- lbl:SetFont("DermaLarge")
-    -- lbl:SetText(credits)
-    -- lbl:SizeToContents()
+    local lbl = vgui.Create("DLabel", dequip)
+    lbl:CopyPos(creditsPnl)
+    lbl:MoveRightOf(img, 7)
+    lbl:SetTextColor(color)
+    lbl:SetFont("DermaLarge")
+    lbl:SetText(credits)
+    lbl:SizeToContents()
+
+    local function ResetSelectPanelsPaint(panelList)
+        for _, pnl in ipairs(panelList:GetItems()) do
+            pnl.PaintOver = function() end
+        end
+    end
+
+    local function onActivePanelChanged(self, _, new)
+        if new and new.item then
+            selectedGun = new.item.id
+
+            if dlistP == self then
+                ResetSelectPanelsPaint(dlistS)
+                ResetSelectPanelsPaint(dlistG)
+            elseif dlistS == self then
+                ResetSelectPanelsPaint(dlistP)
+                ResetSelectPanelsPaint(dlistG)
+            elseif dlistG == self then
+                ResetSelectPanelsPaint(dlistS)
+                ResetSelectPanelsPaint(dlistP)
+            end
+
+            for k, v in pairs(new.item) do
+                if dfields[k] then
+                    dfields[k]:SetText(LANG.TryTranslation(v))
+                    dfields[k]:SetAutoStretchVertical(true)
+                    dfields[k]:SetWrap(true)
+                end
+            end
+        else
+            selectedGun = nil
+
+            for _, v in pairs(dfields) do
+                if v then
+                    v:SetText("---")
+                    v:SetAutoStretchVertical(true)
+                    v:SetWrap(true)
+                end
+            end
+        end
+
+        dconfirm:SetDisabled(new.Disabled or not hasCredits)
+    end
+    dlistP.OnActivePanelChanged = onActivePanelChanged
+    dlistS.OnActivePanelChanged = onActivePanelChanged
+    dlistG.OnActivePanelChanged = onActivePanelChanged
 
     FillEquipmentList(availableWeapons)
+
     return dequip
 end
 
 hook.Add("TTTEquipmentTabs", "Professional Place Bounty Menu", function(propertySheet, frame)
     if LocalPlayer():IsProfessional() then
-        propertySheet:AddSheet("Armory", SetupPanel(propertySheet), shopIcon, false, false, "Weapon Shop Menu")
+        propertySheet:AddSheet("Armory", SetupPanel(propertySheet), tabIcon, false, false, "Weapon Shop Menu")
     end
 end)
 
