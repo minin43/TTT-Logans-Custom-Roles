@@ -1,4 +1,5 @@
 --// Logan Christianson
+
 local damageStyle = GetConVar("ttt_rat_damage_style"):GetInt()
 local damageScaling = GetConVar("ttt_rat_damage_scaling"):GetFloat()
 local damageEnabled = false
@@ -6,7 +7,7 @@ local damageEnabled = false
 hook.Add("TTTDeathNotifyOverride", "Override Death Notification For Rats", function(vic, wep, att, reason, attName, attRole)
     if attRole and attRole == ROLE_RAT then
         if vic:IsInnocentTeam() then
-            attRole = ROLE_TRAITOR
+            attRole = att:GetNWInt("RatRandomRole", ROLE_TRAITOR)
         else
             attRole = ROLE_INNOCENT
         end
@@ -34,7 +35,8 @@ end)
 hook.Add("TTTOnCorpseCreated", "Rat Corpse Role Icon", function(ragdoll, _)
     if ragdoll.killer and ragdoll.was_role == ROLE_RAT then
         if not IsValid(ragdoll.killer) or not ragdoll.killer:IsPlayer() or INNOCENT_ROLES[ragdoll.killer:GetRole()] or DETECTIVE_ROLES[ragdoll.killer:GetRole()] then
-            ragdoll.was_role = ROLE_TRAITOR
+            local ply = player.GetBySteamID64(ragdoll.sid64)
+            ragdoll.was_role = ply:GetNWInt("RatRandomRole", ROLE_TRAITOR)
         elseif TRAITOR_ROLES[ragdoll.killer:GetRole()] then
             ragdoll.was_role = ROLE_INNOCENT
         end
@@ -101,5 +103,11 @@ hook.Add("EntityTakeDamage", "Rat Damage Reduction", function(vic, dmgInfo)
                 end
             end
         end
+    end
+end)
+
+hook.Add("TTTEndRound", "Rat Remove NWVar", function()
+    for _, ply in ipairs(player.GetAll()) do
+        ply:SetNWInt("RatRandomRole", -1)
     end
 end)

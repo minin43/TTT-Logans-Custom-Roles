@@ -15,6 +15,7 @@ ROLE.nameplural = "Bounty Hunters"
 ROLE.nameext = "a Bounty Hunter"
 ROLE.nameshort = "bhu"
 
+ROLE.shortdesc = "An innocent who earns credits for killing bounties placed by Detectives."
 ROLE.desc = [[You are a {role}! You are on the {innocent} team.
 
 Detectives can place bounties on terrorists, earn a credit

@@ -2,7 +2,12 @@
 
 hook.Add("TTTTargetIDPlayerRoleIcon", "Display Traitor Icons For Rat", function(target, localPly, targetRole, visibleThroughWalls, roleColor)
     if IsValid(target) and target:IsPlayer() then
-        if (target:IsRat() and localPly:IsTraitorTeam()) or (target:IsTraitorTeam() and localPly:IsRat()) then
+        if (target:IsRat() and localPly:IsTraitorTeam()) then
+            targetRole = target:GetNWInt("RatRandomRole", ROLE_TRAITOR)
+            roleColor = ROLE_TRAITOR
+        
+            return targetRole, visibleThroughWalls, roleColor
+        elseif (target:IsTraitorTeam() and localPly:IsRat()) then
             targetRole = ROLE_TRAITOR
             roleColor = ROLE_TRAITOR
         
@@ -14,7 +19,9 @@ end)
 hook.Add("TTTTargetIDPlayerText", "Rat Id Texts", function(target, localPly, text, textColor, secondaryText)
     if IsValid(target) and target:IsPlayer() then
         if target:IsRat() and localPly:IsTraitorTeam() then
-            return string.upper(ROLE_STRINGS[ROLE_TRAITOR]), ROLE_COLORS_RADAR[ROLE_TRAITOR], secondaryText
+            local role = target:GetNWInt("RatRandomRole", ROLE_TRAITOR)
+
+            return string.upper(ROLE_STRINGS[role]), ROLE_COLORS_RADAR[role], secondaryText
         elseif target:IsTraitorTeam() and localPly:IsRat() then
             return "DIRTY TRAITOR", ROLE_COLORS_RADAR[ROLE_TRAITOR], secondaryText
         end
@@ -32,7 +39,9 @@ hook.Add("TTTScoreboardPlayerRole", "Rat Scoreboard Alterations", function(targe
         if not targetPly:Alive() and targetPly:GetNWBool("body_searched", false) then
             return ROLE_COLORS_SCOREBOARD[ROLE_RAT], "vgui/ttt/roles/rat/tab_rat.png"
         else
-            return ROLE_COLORS_SCOREBOARD[ROLE_TRAITOR], "vgui/ttt/roles/traitor/tab_traitor.png"
+            local role = target:GetNWInt("RatRandomRole", ROLE_TRAITOR)
+
+            return ROLE_COLORS_SCOREBOARD[role], "vgui/ttt/roles/traitor/tab_" .. ROLE_STRINGS_SHORT[role] .. ".png"
         end
     end
 

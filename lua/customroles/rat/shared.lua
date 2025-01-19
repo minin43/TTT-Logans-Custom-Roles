@@ -26,6 +26,7 @@ if SERVER then
 end
 ROLE.ConvarRatShowTraitorsOnScoreboard = CreateConVar("ttt_rat_show_traitors_scoreboard", "0", FCVAR_REPLICATED, "If set to 1, shows all the traitors in the Rat's scoreboard, default is 0", 0, 1)
 ROLE.ConvarRatDamageStyle = CreateConVar("ttt_rat_damage_style", "4", FCVAR_REPLICATED, "Controls how the Rat can damage traitors, lending to different gameplay. See workshop page or shared.lua file for breakdown. 1: Reduced (default), 2: Full but can't kill, 3: Full and can kill", 1, 4)
+ROLE.ConvarRatShowAsRandomRole = CreateConVar("ttt_rat_show_as_random_role", "1", FCVAR_NONE, "If set to 1, the Rat displays as any unused Traitor role, instead of as exclusively the vanilla Traitor", 0, 1)
 
 ROLE.nameraw = "rat"
 ROLE.name = "Rat"
@@ -33,6 +34,7 @@ ROLE.nameplural = "Rats"
 ROLE.nameext = "a Rat"
 ROLE.nameshort = "rat"
 
+ROLE.shortdesc = "An innocent that appears as a, and can see, traitors."
 ROLE.desc = [[You are a {role}! You are on the {innocent} team.
 
 You can see the traitors and appears as one to them.
@@ -40,6 +42,39 @@ You can see the traitors and appears as one to them.
 Depending on who kills you, your corpse will instead show as innocent or traitor.]]
 
 ROLE.team = ROLE_TEAM_INNOCENT
+
+if SERVER then
+    ROLE.onroleassigned = function(ply)
+        if ROLE.ConvarRatShowAsRandomRole:GetBool() and ply:GetNWInt("RatRandomRole", -1) == -1 then
+            local availableRoles = {}
+
+            for role, is_on_team in pairs(TRAITOR_ROLES) do
+                if is_on_team and util.CanRoleSpawnNaturally(role) then
+                    table.insert(availableRoles, role)
+    
+                    if role != ROLE_TRAITOR then
+                        for _, ply in ipairs(player.GetAll()) do
+                            if ply:GetRole() == role then
+                                table.RemoveByValue(role)
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+    
+            ply:SetNWInt("RatRandomRole", availableRoles[math.random(#availableRoles)])
+        end
+    end
+
+    ROLE.moverolestate = function(oldPly, newPly, keepDataOnOldPly)
+        newPly:SetNwInt("RatRandomRole", oldPly:GetNWInt("RatRandomRole", -1))
+
+        if not keepDataOnOldPly then
+            oldPly:SetNWInt("RatRandomRole", -1)
+        end
+    end
+end
 
 ROLE.shop = {}
 ROLE.loadout = {}

@@ -8,6 +8,7 @@ ROLE.nameplural = "Outlaws"
 ROLE.nameext = "an Outlaw"
 ROLE.nameshort = "otl"
 
+ROLE.shortdesc = "A traitor that is immune to a variety of Detective team effects."
 ROLE.desc = [[You are an {role}! {comrades}
 
 You are immune to a variety of detective effects, and spawn with

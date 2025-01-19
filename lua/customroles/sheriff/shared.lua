@@ -14,6 +14,7 @@ ROLE.nameplural = "Sheriffs"
 ROLE.nameext = "a Sheriff"
 ROLE.nameshort = "srf"
 
+ROLE.shortdesc = "A Detective unable to wield primary weapons, but secondary weapons are more powerful."
 ROLE.desc = [[You are a {role}!
 
 You are unable to wield primary weapons, but all secondary

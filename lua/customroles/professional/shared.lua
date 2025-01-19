@@ -14,6 +14,7 @@ ROLE.nameplural = "Professionals"
 ROLE.nameext = "a Professional"
 ROLE.nameshort = "pro"
 
+ROLE.shortdesc = "A traitor with a damage bonus and access to a unique shop containing all standard weapons."
 ROLE.desc = [[You are a {role}! {comrades}
 
 Press {menukey} to access a unique shop containing all ground-
